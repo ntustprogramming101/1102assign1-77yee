@@ -6,7 +6,7 @@ PImage robotImg;
 PImage humanImg;
   float robotLocationX;
   int robotLocationY;
-  float robotX;
+  int robotX;
   int robotY;
   float soldierLocationX;
   int soldierLocationY;
@@ -14,10 +14,10 @@ PImage humanImg;
   int soldierSpeedX;
   int soldierY;
   int speedX;
-  float lasorX;
+  int lasorX1,lasorX2;
   int lasorY;
-  float edge;
-  
+  int edge,laserLenght;
+
 void setup() {
   size(640, 480,P2D);
 
@@ -28,20 +28,21 @@ void setup() {
   robotImg=loadImage("img/robot.png");
   humanImg=loadImage("img/soldier.png");
 
-  soldierX = 0;
+  
   soldierLocationY=floor(random(2,6));
   soldierY=soldierLocationY*80;
   robotLocationX=random(2,8);
   robotLocationY=floor(random(2,6));
   robotY=robotLocationY*80;
-  robotX=robotLocationX*80-70;
+  robotX=(int)robotLocationX*80-70;
     if(soldierY==robotY){
     robotLocationY=floor(random(2,6));
     robotY=robotLocationY*80;}
  
   lasorY=robotY+37;
-  lasorX=robotX-25.0-30.0;
-  edge=lasorX-160+30;//light
+  lasorX1=robotX+25;
+  lasorX2=robotX+25;
+  edge=lasorX1-160+30;//light
 }
 
 void draw() {
@@ -56,8 +57,7 @@ void draw() {
   
   /*base*/
   image(skyImg,0,0);//sky
-  
-  fill(124,204,25);
+   fill(124,204,25);
   noStroke();
   rect(0,145,640,15);//grassland
   
@@ -83,24 +83,27 @@ void draw() {
   soldierX+=soldierSpeedX;
     if(soldierX>=width){
     image(humanImg,soldierX,soldierY);
+    soldierX =-80;
     soldierSpeedX=3;
     soldierX+=soldierSpeedX;
     soldierX%=640;}//human
+    
+    image(robotImg,robotX,robotY);//robot
   
-  image(robotImg,robotX,robotY);
-  //robot
-  
-  /*ultimate*/
+   /*ultimate*/
   stroke(260,0,0);
   strokeWeight(10);
-  line(lasorX,lasorY,lasorX+30,lasorY);
-  
   speedX=2;
-  lasorX-=speedX;
-  lasorX%=640;
-    if(lasorX-5<=edge||lasorX<=5){
-    lasorX=edge+160-30;
-    lasorX-=2;
-    lasorX%=640;} 
+   
+  line(lasorX2,lasorY,(lasorX1-=speedX) -laserLenght++,lasorY);
+  if(laserLenght++ > 20){
+    lasorX2-=speedX;
+    laserLenght=20;
+  }
+  if(robotX-140 >= lasorX1){
+    laserLenght=0;/*let laser from short to long*/
+    lasorX1=robotX+25;
+    lasorX2=robotX+25;
+  }
     
 }
